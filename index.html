@@ -4,14 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .upload-container {
+            text-align: center;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Upload a File</h1>
-    <form id="uploadForm">
-        <input type="file" id="fileInput" name="file">
-        <button type="submit">Upload</button>
-    </form>
+    <div class="upload-container">
+        <h1>Upload a File</h1>
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()">Upload</button>
+        <p id="message"></p>
+    </div>
 
-    <script src="upload.js"></script>
+    <script>
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const message = document.getElementById('message');
+
+            if (fileInput.files.length === 0) {
+                message.textContent = 'Please select a file to upload.';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('https://upload-ht47f3zg0-aryan-shahbazs-projects.vercel.app/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('File upload failed');
+                }
+
+                const result = await response.json();
+                message.textContent = `File "${file.name}" uploaded successfully!`;
+            } catch (error) {
+                message.textContent = 'Failed to upload file.';
+                console.error('Error:', error);
+            }
+        }
+    </script>
 </body>
 </html>
